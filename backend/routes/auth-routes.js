@@ -78,4 +78,18 @@ router.post("/truck-login", async (req, res) => {
   }
 });
 
+// Get current authenticated user
+import { authenticate } from "../middlewares/auth.js";
+
+router.get("/me", authenticate, async (req, res) => {
+  try {
+    if (!req.user) return res.status(401).json({ message: "Not authenticated" });
+    const user = await User.findById(req.user.id).select("-password");
+    res.json(user);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
 export default router;
